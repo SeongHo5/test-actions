@@ -26,7 +26,7 @@ jobs:
         run: npm install
 
       - name: Run JSON validator
-        run: node {absolute_path_to_your_script.js}
+        run: node hello.js
 
       # git add 할 파일명, 커밋 메세지 외에는 수정하지 마세요!
       - name: Commit & Push if changes detected
