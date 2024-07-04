@@ -31,5 +31,5 @@ jobs:
           git config --global user.name 'github-actions[bot]'
           git config --global user.email 'github-actions[bot]@users.noreply.github.com'
           git add changed.json
-          git commit -m 'Your commit message here'
-          git push
+          git commit -m 'Your commit message here!'
+          git push origin HEAD:${{ github.head_ref }}
