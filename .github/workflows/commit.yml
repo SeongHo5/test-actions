@@ -28,6 +28,6 @@ jobs:
         run: |
           git config --global user.name 'github-actions[bot]'
           git config --global user.email 'github-actions[bot]@users.noreply.github.com'
-          git add b.json
+          git add .
           git commit -m 'Automated commit: Updated b.json with values from a.json + 10'
-          git push https://x-access-token:${{ secrets.PERSONAL_ACCESS_TOKEN }}@github.com/SeongHo5/test-actions.git HEAD:main
+          git push
