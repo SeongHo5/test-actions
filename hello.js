@@ -12,7 +12,7 @@ for (const key in data) {
     }
 }
 
-// b.json 파일로 저장
-fs.writeFileSync('b.json', JSON.stringify(updatedData, null, 2));
+// changed.json 파일로 저장
+fs.writeFileSync('changed.json', JSON.stringify(updatedData, null, 2));
 
-console.log('b.json 파일이 업데이트되었습니다.');
+console.log('changed.json 파일이 업데이트되었습니다.');
