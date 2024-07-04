@@ -1,9 +1,9 @@
-name: Run JavaScript and Commit Changes
+name: JSON Auto-Validator
 
 on:
   pull_request:
     branches:
-      - main
+      - {your_branch_name}
 
 jobs:
   build:
@@ -20,18 +20,23 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v2
         with:
-          node-version: '20'
+          node-version: {your_node_version}
 
       - name: Install dependencies
         run: npm install
 
-      - name: Run JavaScript file
-        run: node hello.js
+      - name: Run JSON validator
+        run: node {absolute_path_to_your_script.js}
 
-      - name: Commit and push changes
+      # git add 할 파일명, 커밋 메세지 외에는 수정하지 마세요!
+      - name: Commit & Push if changes detected
         run: |
           git config --global user.name 'github-actions[bot]'
           git config --global user.email 'github-actions[bot]@users.noreply.github.com'
-          git add changed.json
+          if git diff --quiet; then
+            echo "No changes detected!"
+            exit 0
+          fi
+          git add {your_json_file_name}.json
           git commit -m '[Github Actions Bot] Your commit messages here!'
           git push origin HEAD:${{ github.head_ref }}
