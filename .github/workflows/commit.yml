@@ -3,7 +3,7 @@ name: JSON Auto-Validator
 on:
   pull_request:
     branches:
-      - {your_branch_name}
+      - main
 
 jobs:
   build:
@@ -20,7 +20,7 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v2
         with:
-          node-version: {your_node_version}
+          node-version: '20'
 
       - name: Install dependencies
         run: npm install
@@ -37,6 +37,6 @@ jobs:
             echo "No changes detected!"
             exit 0
           fi
-          git add {your_json_file_name}.json
+          git add changed.json
           git commit -m '[Github Actions Bot] Your commit messages here!'
           git push origin HEAD:${{ github.head_ref }}
