@@ -1,7 +1,9 @@
 name: Run JavaScript and Commit Changes
 
 on:
-  push:
+  pull_request:
+    branches:
+      - main
 
 jobs:
   build:
