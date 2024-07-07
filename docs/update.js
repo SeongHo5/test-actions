@@ -2,35 +2,15 @@ const fs = require('fs');
 const path = require('path');
 const yaml = require('js-yaml');
 
-// 디렉토리 내 파일 검색 함수
-function findFileByName(dir, fileName) {
-    let result = null;
-
-    function searchDirectory(directory) {
-        const files = fs.readdirSync(directory);
-        for (const file of files) {
-            const fullPath = path.join(directory, file);
-            if (fs.statSync(fullPath).isDirectory()) {
-                searchDirectory(fullPath);
-            } else if (file === fileName) {
-                result = fullPath;
-                return;
-            }
-        }
-    }
-
-    searchDirectory(dir);
-    return result;
-}
-
+// 현재 작업 디렉토리 설정
 const baseDir = process.env.GITHUB_WORKSPACE || path.resolve(__dirname, '../..');
-const initializerPath = findFileByName(baseDir, 'swagger-initializer.js');
 const apiDir = path.join(baseDir, 'docs/api');
+const initializerPath = path.join(baseDir, 'src/main/resources/dist/swagger-initializer.js');
 
-if (!initializerPath) {
-    console.error('swagger-initializer.js 파일을 찾을 수 없습니다.');
-    process.exit(1);
-}
+// 디버깅을 위해 경로를 출력
+console.log('Base directory:', baseDir);
+console.log('API directory:', apiDir);
+console.log('Initializer path:', initializerPath);
 
 // 초기화 파일 읽기
 let initializerContent;
@@ -51,7 +31,13 @@ if (urlsMatch && urlsMatch[1]) {
 }
 
 // API 디렉토리에서 YAML 파일 목록 읽기
-const yamlFiles = fs.readdirSync(apiDir).filter(file => file.endsWith('.yaml'));
+let yamlFiles;
+try {
+    yamlFiles = fs.readdirSync(apiDir).filter(file => file.endsWith('.yaml'));
+} catch (error) {
+    console.error(`Error reading API directory at ${apiDir}:`, error);
+    process.exit(1);
+}
 
 // 새로운 URL 추가
 yamlFiles.forEach(file => {
