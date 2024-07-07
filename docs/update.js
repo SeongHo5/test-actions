@@ -2,11 +2,35 @@ const fs = require('fs');
 const path = require('path');
 const yaml = require('js-yaml');
 
-// 현재 작업 디렉토리 설정
-const baseDir = process.env.GITHUB_WORKSPACE || path.resolve(__dirname, '../..');
+// 디렉토리 내 파일 검색 함수
+function findFileByName(dir, fileName) {
+    let result = null;
 
-const initializerPath = path.join(baseDir, 'src/main/resources/dist/swagger-initializer.js');
+    function searchDirectory(directory) {
+        const files = fs.readdirSync(directory);
+        for (const file of files) {
+            const fullPath = path.join(directory, file);
+            if (fs.statSync(fullPath).isDirectory()) {
+                searchDirectory(fullPath);
+            } else if (file === fileName) {
+                result = fullPath;
+                return;
+            }
+        }
+    }
+
+    searchDirectory(dir);
+    return result;
+}
+
+const baseDir = process.env.GITHUB_WORKSPACE || path.resolve(__dirname, '../..');
+const initializerPath = findFileByName(baseDir, 'swagger-initializer.js');
 const apiDir = path.join(baseDir, 'docs/api');
+
+if (!initializerPath) {
+    console.error('swagger-initializer.js 파일을 찾을 수 없습니다.');
+    process.exit(1);
+}
 
 // 초기화 파일 읽기
 let initializerContent;
