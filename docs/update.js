@@ -2,11 +2,20 @@ const fs = require('fs');
 const path = require('path');
 const yaml = require('js-yaml');
 
-const initializerPath = path.join(__dirname, '../src/main/resources/dist/swagger-initializer.js');
-const apiDir = path.join(__dirname, 'api');
+// 현재 작업 디렉토리 설정
+const baseDir = process.env.GITHUB_WORKSPACE || __dirname;
+
+const initializerPath = path.join(baseDir, 'src/main/resources/dist/swagger-initializer.js');
+const apiDir = path.join(baseDir, 'docs/api');
 
 // 초기화 파일 읽기
-let initializerContent = fs.readFileSync(initializerPath, 'utf-8');
+let initializerContent;
+try {
+    initializerContent = fs.readFileSync(initializerPath, 'utf-8');
+} catch (error) {
+    console.error(`Error reading initializer file at ${initializerPath}:`, error);
+    process.exit(1);
+}
 
 // 기존 URL 추출
 const urlsRegex = /urls: \[(.*?)]/s;
@@ -41,6 +50,10 @@ const newUrlsString = existingUrls.map(url => `{url: "${url.url}", name: "${url.
 initializerContent = initializerContent.replace(urlsRegex, `urls: [${newUrlsString}]`);
 
 // 초기화 파일 저장
-fs.writeFileSync(initializerPath, initializerContent, 'utf-8');
-
-console.log('swagger-initializer.js 파일이 업데이트되었습니다.');
+try {
+    fs.writeFileSync(initializerPath, initializerContent, 'utf-8');
+    console.log('swagger-initializer.js 파일이 업데이트되었습니다.');
+} catch (error) {
+    console.error(`Error writing initializer file at ${initializerPath}:`, error);
+    process.exit(1);
+}
