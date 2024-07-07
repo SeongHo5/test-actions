@@ -1,5 +1,6 @@
 const fs = require('fs');
 const path = require('path');
+const yaml = require('js-yaml');
 
 const initializerPath = path.join(__dirname, '../src/main/resources/dist/swagger-initializer.js');
 const apiDir = path.join(__dirname, 'api');
@@ -8,7 +9,7 @@ const apiDir = path.join(__dirname, 'api');
 let initializerContent = fs.readFileSync(initializerPath, 'utf-8');
 
 // 기존 URL 추출
-const urlsRegex = /urls: \[(.*?)\]/s;
+const urlsRegex = /urls: \[(.*?)]/s;
 const urlsMatch = initializerContent.match(urlsRegex);
 let existingUrls = [];
 
@@ -22,7 +23,10 @@ const yamlFiles = fs.readdirSync(apiDir).filter(file => file.endsWith('.yaml'));
 // 새로운 URL 추가
 yamlFiles.forEach(file => {
     const filePath = path.join(apiDir, file);
-    const title = path.basename(file, '.yaml');
+    const fileContent = fs.readFileSync(filePath, 'utf-8');
+    const parsedYaml = yaml.load(fileContent);
+
+    const title = parsedYaml.info && parsedYaml.info.title ? parsedYaml.info.title : path.basename(file, '.yaml');
     const url = `./docs/api/${file}`;
 
     if (!existingUrls.some(existingUrl => existingUrl.url === url)) {
