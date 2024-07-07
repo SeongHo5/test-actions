@@ -1,0 +1,10 @@
+openapi: 3.0.0
+info:
+  title: LOCAT API
+  description: Team-LOCAT의 API 문서입니다.
+  version: 0.0.1-SNAPSHOT
+servers:
+  - url: https://api.locat.com
+    description: Production server
+  - url: http://localhost:8080
+    description: Local server
