@@ -1,4 +1,5 @@
-name: Update OpenAPI Docs
+name: Update OpenAPI URLs
+
 on:
   workflow_dispatch:
   push:
@@ -7,29 +8,30 @@ on:
       - develop
 
 jobs:
-  update-urls:
+  update-openapi-urls:
     runs-on: ubuntu-latest
     permissions:
       contents: write
 
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
-        with:
-          ref: ${{ github.ref }}
+      - name: Setup and Install Dependencies
+        run: |
+          # Checkout code
+          git checkout ${{ github.ref }}
 
-      - name: Set up Node.js
-        uses: actions/setup-node@v2
-        with:
-          node-version: '20'
+          # Set up Node.js
+          curl -sL https://deb.nodesource.com/setup_20.x | sudo -E bash -
+          sudo apt-get install -y nodejs
+          node -v
+          npm -v
 
-      - name: Install dependencies
-        run: npm install
+          # Install dependencies
+          npm install
 
-      - name: Update OpenAPI Docs
+      - name: Update OpenAPI Documentation
         run: node ./docs/update.js
 
-      - name: Commit and push changes
+      - name: Commit and Push Changes
         run: |
           git config --global user.name 'github-actions[bot]'
           git config --global user.email 'github-actions[bot]@users.noreply.github.com'

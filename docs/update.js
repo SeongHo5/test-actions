@@ -2,26 +2,33 @@ const fs = require('fs');
 const path = require('path');
 const yaml = require('js-yaml');
 
-// 현재 작업 디렉토리 설정
-const baseDir = process.env.GITHUB_WORKSPACE || path.resolve(__dirname, '../..');
-const apiDir = path.join(baseDir, 'docs/api');
-const initializerPath = path.join(baseDir, 'src/main/resources/dist/swagger-initializer.js');
+const STANDARD_CHARSET = 'UTF-8';
 
-// 디버깅을 위해 경로를 출력
-console.log('Base directory:', baseDir);
-console.log('API directory:', apiDir);
-console.log('Initializer path:', initializerPath);
+const baseDirectory = process.env.GITHUB_WORKSPACE || path.resolve(__dirname, '../..');
+const apiYamlDirectory = path.join(baseDirectory, 'docs/api');
+const swaggerPath = path.join(baseDirectory, 'src/main/resources/dist/swagger-initializer.js');
 
-// 초기화 파일 읽기
-let initializerContent;
-try {
-    initializerContent = fs.readFileSync(initializerPath, 'utf-8');
-} catch (error) {
-    console.error(`Error reading initializer file at ${initializerPath}:`, error);
-    process.exit(1);
+function readFile(filePath, encoding = STANDARD_CHARSET) {
+    try {
+        return fs.readFileSync(filePath, encoding);
+    } catch (error) {
+        console.error(`Error reading file at ${filePath}:`, error);
+        process.exit(1);
+    }
 }
 
-// 기존 URL 추출
+function readDirectory(directoryPath) {
+    try {
+        return fs.readdirSync(directoryPath);
+    } catch (error) {
+        console.error(`Error reading directory at ${directoryPath}:`, error);
+        process.exit(1);
+    }
+}
+
+// 초기화 파일 읽기
+let initializerContent = readFile(swaggerPath);
+
 const urlsRegex = /urls: \[(.*?)]/s;
 const urlsMatch = initializerContent.match(urlsRegex);
 let existingUrls = [];
@@ -30,22 +37,16 @@ if (urlsMatch && urlsMatch[1]) {
     existingUrls = JSON.parse(`[${urlsMatch[1].replace(/url: /g, '"url": ').replace(/name: /g, '"name": ')}]`);
 }
 
-// API 디렉토리에서 YAML 파일 목록 읽기
-let yamlFiles;
-try {
-    yamlFiles = fs.readdirSync(apiDir).filter(file => file.endsWith('.yaml'));
-} catch (error) {
-    console.error(`Error reading API directory at ${apiDir}:`, error);
-    process.exit(1);
-}
+// YAML 파일 목록 가져오기
+let yamlFiles = readDirectory(apiYamlDirectory).filter(file => file.endsWith('.yaml'));
 
 // 새로운 URL 추가
 yamlFiles.forEach(file => {
-    const filePath = path.join(apiDir, file);
-    const fileContent = fs.readFileSync(filePath, 'utf-8');
+    const filePath = path.join(apiYamlDirectory, file);
+    const fileContent = readFile(filePath);
     const parsedYaml = yaml.load(fileContent);
 
-    const title = parsedYaml.info && parsedYaml.info.title ? parsedYaml.info.title : path.basename(file, '.yaml');
+    const title = parsedYaml.info?.title || path.basename(file, '.yaml');
     const url = `./docs/api/${file}`;
 
     if (!existingUrls.some(existingUrl => existingUrl.url === url)) {
@@ -61,9 +62,9 @@ initializerContent = initializerContent.replace(urlsRegex, `urls: [${newUrlsStri
 
 // 초기화 파일 저장
 try {
-    fs.writeFileSync(initializerPath, initializerContent, 'utf-8');
-    console.log('swagger-initializer.js 파일이 업데이트되었습니다.');
+    fs.writeFileSync(swaggerPath, initializerContent, 'utf-8');
+    console.log('API 문서의 URLs 업데이트가 완료되었습니다.');
 } catch (error) {
-    console.error(`Error writing initializer file at ${initializerPath}:`, error);
+    console.error(`Error writing swagger-initializer file at ${swaggerPath}:`, error);
     process.exit(1);
 }
