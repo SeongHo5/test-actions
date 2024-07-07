@@ -3,7 +3,7 @@ const path = require('path');
 const yaml = require('js-yaml');
 
 // 현재 작업 디렉토리 설정
-const baseDir = process.env.GITHUB_WORKSPACE || __dirname;
+const baseDir = process.env.GITHUB_WORKSPACE || path.resolve(__dirname, '../..');
 
 const initializerPath = path.join(baseDir, 'src/main/resources/dist/swagger-initializer.js');
 const apiDir = path.join(baseDir, 'docs/api');

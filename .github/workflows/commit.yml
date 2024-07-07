@@ -35,6 +35,6 @@ jobs:
             echo "No changes detected!"
             exit 0
           fi
-          git add swagger-initializer.js
+          git add src/main/resources/dist/swagger-initializer.js
           git commit -m 'Update Swagger URLs'
           git push origin HEAD:${{ github.head_ref }}
