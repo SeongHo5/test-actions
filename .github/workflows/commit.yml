@@ -10,11 +10,11 @@ jobs:
   update-urls:
     runs-on: ubuntu-latest
     permissions:
-      contents: read
+      pull-requests: read
 
     steps:
       - name: Checkout code
-        uses: SeongHo5/pr-reminder@v1.2
+        uses: SeongHo5/pr-reminder@v1.3
         with:
           platform: 'slack'
           webhook-url: 'https://hooks.slack.com/services/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'
