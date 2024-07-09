@@ -1,4 +1,4 @@
-name: Update API Docs
+name: PR Reminder
 on:
   workflow_dispatch:
   pull_request:
@@ -10,33 +10,12 @@ jobs:
   update-urls:
     runs-on: ubuntu-latest
     permissions:
-      contents: write
+      contents: read
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v2
+        uses: SeongHo5/pr-reminder@v1.1
         with:
-          ref: ${{ github.ref }}
-
-      - name: Set up Node.js
-        uses: actions/setup-node@v2
-        with:
-          node-version: '20'
-
-      - name: Install dependencies
-        run: npm install
-
-      - name: Update OpenAPI Docs
-        run: node ./docs/update.js
-
-      - name: Commit and push changes
-        run: |
-          git config --global user.name 'github-actions[bot]'
-          git config --global user.email 'github-actions[bot]@users.noreply.github.com'
-          if git diff --quiet; then
-            echo "No changes detected!"
-            exit 0
-          fi
-          git add src/main/resources/dist/swagger-initializer.js
-          git commit -m 'Update Swagger URLs'
-          git push origin HEAD:${{ github.ref }}
+          platform: 'slack'
+          webhook-url: 'https://hooks.slack.com/services/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'
+          reminder-time: 1
