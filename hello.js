@@ -15,4 +15,4 @@ for (const key in data) {
 // changed.json 파일로 저장
 fs.writeFileSync('changed.json', JSON.stringify(updatedData, null, 2));
 
-console.log('changed.json 파일이 업데이트되었습니다.');
+console.log('changed.json 파일이 Updated.');
