@@ -6,9 +6,7 @@ on:
 jobs:
   synchronize:
     runs-on: ubuntu-latest
-    permissions:
-      contents: write
-      actions: write
+    permissions: write-all
 
     steps:
       - name: Trigger API Docs Sync via Octokit
