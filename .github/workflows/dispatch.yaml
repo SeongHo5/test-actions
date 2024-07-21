@@ -15,29 +15,20 @@ jobs:
       contents: read
 
     steps:
-#      - name: Trigger API Docs Sync via Octokit
-#        uses: actions/github-script@v7.0.1
-#        continue-on-error: true
-#        with:
-#          script: |
-#              octokit.request('POST /repos/SeongHo5/pages-test/dispatches', {
-#              owner: 'SeongHo5',
-#              repo: 'pages-test',
-#              event_type: 'sync-api-docs',
-#              client_payload: {
-#                unit: false,
-#                integration: true
-#              },
-#              headers: {
-#                'X-GitHub-Api-Version': '2022-11-28'
-#              }
-#            });
+      - name: Trigger API Docs Sync via Octokit
+        uses: actions/github-script@v7.0.1
+        with:
+          script: |
+              octokit.request('POST /repos/SeongHo5/pages-test/dispatches', {
+              owner: 'SeongHo5',
+              repo: 'pages-test',
+              event_type: 'sync-api-docs',
+              client_payload: {
+                unit: false,
+                integration: true
+              },
+              headers: {
+                'X-GitHub-Api-Version': '2022-11-28'
+              }
+            });
 
-      - name: Trigger API Docs Sync via GH API
-        run: |
-          gh api \
-            --method POST \
-            -H "Accept: application/vnd.github+json" \
-            -H "X-GitHub-Api-Version: 2022-11-28" \
-              /repos/SeongHo5/pages-test/dispatches \
-              -f "event_type=on-demand-test" -F "client_payload[unit]=false" -F "client_payload[integration]=true"
