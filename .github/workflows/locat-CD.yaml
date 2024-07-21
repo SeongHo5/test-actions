@@ -27,8 +27,8 @@ jobs:
         with:
           push: true
           tags: |
-            ${{ secrets.DOCKER_REPO }}/prod:latest
-            ${{ secrets.DOCKER_REPO }}/prod:${{ github.sha }}
+            ${{ secrets.DOCKER_REPO }}:latest
+            ${{ secrets.DOCKER_REPO }}:${{ github.sha }}
 
 #      - name: Deploy
 #        uses: appleboy/ssh-action@master
