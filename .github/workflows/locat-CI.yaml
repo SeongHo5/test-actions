@@ -22,7 +22,7 @@ jobs:
           distribution: 'temurin'
 
       - name: Set-up Gradle
-        uses: gradle/actions/setup-gradle@v3.5
+        uses: gradle/actions/setup-gradle@v3.5.0
 
 #      - name: Set Gradlew permission
 #        run: chmod +x ./gradlew
