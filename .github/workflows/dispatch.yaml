@@ -12,11 +12,8 @@ jobs:
       - name: Trigger API Docs Sync via Octokit
         uses: actions/github-script@v7.0.1
         with:
-          github-token: ${{ secrets.SEONGHO_PAT }}
           script: |
             github.request('POST /repos/SeongHo5/pages-test/dispatches', {
-              owner: 'SeongHo5',
-              repo: 'pages-test',
               event_type: 'sync-api-docs',
               client_payload: {
                 unit: false,
