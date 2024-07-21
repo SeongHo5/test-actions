@@ -24,7 +24,6 @@ jobs:
         uses: docker/build-push-action@v5.1.0
         with:
           context: .
-          file: Dockerfile
           push: true
           tags: |
             ${{ secrets.DOCKER_REPO }}/prod:latest
