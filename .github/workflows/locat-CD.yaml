@@ -10,7 +10,7 @@ on:
 
 jobs:
   locat-CD:
-    if: github.event.workflow_run.conclusion == 'success' && contains(github.ref, 'main')
+    if: contains(github.ref, 'main')
     runs-on: ubuntu-latest
     permissions:
       contents: read
