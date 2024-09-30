@@ -4,9 +4,9 @@ const yaml = require('js-yaml');
 
 const STANDARD_CHARSET = 'UTF-8';
 
-const baseDirectory = process.env.GITHUB_WORKSPACE || path.resolve(__dirname, '../..');
-const apiYamlDirectory = path.join(baseDirectory, 'docs/api');
-const swaggerPath = path.join(baseDirectory, 'src/main/resources/dist/swagger-initializer.js');
+const baseDirectory = path.resolve(__dirname, 'pages');
+const apiYamlDirectory = path.join(baseDirectory, 'openapi');
+const swaggerPath = path.join(baseDirectory, 'swagger-initializer.js');
 
 function readFile(filePath, encoding = STANDARD_CHARSET) {
     try {
@@ -26,45 +26,36 @@ function readDirectory(directoryPath) {
     }
 }
 
-// 초기화 파일 읽기
-let initializerContent = readFile(swaggerPath);
-
 const urlsRegex = /urls: \[(.*?)]/s;
-const urlsMatch = initializerContent.match(urlsRegex);
+let swaggerContent = readFile(swaggerPath);
+const urlsMatch = swaggerContent.match(urlsRegex);
 let existingUrls = [];
 
 if (urlsMatch && urlsMatch[1]) {
     existingUrls = JSON.parse(`[${urlsMatch[1].replace(/url: /g, '"url": ').replace(/name: /g, '"name": ')}]`);
 }
 
-// YAML 파일 목록 가져오기
 let yamlFiles = readDirectory(apiYamlDirectory).filter(file => file.endsWith('.yaml'));
-
-// 새로운 URL 추가
 yamlFiles.forEach(file => {
     const filePath = path.join(apiYamlDirectory, file);
     const fileContent = readFile(filePath);
     const parsedYaml = yaml.load(fileContent);
 
     const title = parsedYaml.info?.title || path.basename(file, '.yaml');
-    const url = `./docs/api/${file}`;
+    const url = `./openapi/${file}`;
 
     if (!existingUrls.some(existingUrl => existingUrl.url === url)) {
         existingUrls.push({ url, name: title });
     }
 });
 
-// 새로운 URL 목록 생성
 const newUrlsString = existingUrls.map(url => `{url: "${url.url}", name: "${url.name}"}`).join(', ');
+swaggerContent = swaggerContent.replace(urlsRegex, `urls: [${newUrlsString}]`);
 
-// 초기화 파일 업데이트
-initializerContent = initializerContent.replace(urlsRegex, `urls: [${newUrlsString}]`);
-
-// 초기화 파일 저장
 try {
-    fs.writeFileSync(swaggerPath, initializerContent, 'utf-8');
-    console.log('API 문서의 URLs 업데이트가 완료되었습니다.');
+    fs.writeFileSync(swaggerPath, swaggerContent, 'utf-8');
+    console.log('API 문서 최신화 완료!');
 } catch (error) {
-    console.error(`Error writing swagger-initializer file at ${swaggerPath}:`, error);
+    console.error(`Error writing swagger-initializer.js :`, error);
     process.exit(1);
 }
